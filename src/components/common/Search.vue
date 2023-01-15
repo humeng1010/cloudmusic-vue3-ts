@@ -1,0 +1,72 @@
+<script setup lang="ts">
+import type SearchDefault from '@/type/SearchDefault'
+import { reactive, ref, watch } from 'vue';
+import { getSearchSuggest } from '@/api/index'
+
+const keyword = ref('')
+const searchSuggest = ref<{ alg?: string, feature?: string, keyword?: string, lastKeyword?: string, type?: number }[]>([])
+defineProps<{
+    searchDefault?: SearchDefault,
+    disable?: boolean,
+    autofocus?: boolean
+}>()
+// 接收打开搜索页面的自定义事件
+const emit = defineEmits<{
+    (e: 'openSearchPage'): void
+}>()
+const openSearchPage = () => {
+    emit("openSearchPage")
+}
+let timer: number
+watch(keyword, (value) => {
+    if (!value.trim()) return
+    clearTimeout(timer)
+    timer = setTimeout(async () => {
+        const res = await getSearchSuggest(value)
+        console.log('@@')
+        searchSuggest.value = res.data.result.allMatch
+    }, 500);
+})
+</script>
+
+<template>
+    <div class="search">
+        <div class="msg">
+            <slot name="left"></slot>
+        </div>
+        <div class="search-main" @click="openSearchPage">
+            <van-search left-icon="none" v-model="keyword" :autofocus="autofocus" :disabled="disable"
+                :placeholder="searchDefault?.showKeyword" shape="round" />
+        </div>
+        <div class="scan">
+            <slot name="right" :value="keyword"></slot>
+        </div>
+    </div>
+    <div class="list" v-show="keyword">
+        <van-list>
+            <van-cell v-for="item, index in searchSuggest" :key="index" :title="item.keyword" />
+        </van-list>
+    </div>
+</template>
+
+<style scoped lang="less">
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .msg {
+        font-size: 30px;
+        padding: 8px;
+    }
+
+    .search-main {
+        flex: 1;
+    }
+
+    .scan {
+        font-size: 30px;
+        padding: 8px;
+    }
+}
+</style>
