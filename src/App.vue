@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import TabBar from '@/components/common/TabBar.vue'
+
 </script>
 
 <template>
@@ -10,7 +12,9 @@ import { RouterView } from 'vue-router'
         <component :is='Component'></component>
       </keep-alive>
     </RouterView>
+
   </Suspense>
+  <TabBar v-show="$route.meta.showBar"></TabBar>
 </template>
 
 <style scoped>

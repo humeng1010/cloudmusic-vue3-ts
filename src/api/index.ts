@@ -1,3 +1,4 @@
+import type SearchDefault from '@/type/SearchDefault'
 import req from './req'
 
 export const getSearchDefault = () => req.get("/search/default")
@@ -10,3 +11,5 @@ export const getSearchSuggest = (keyword: string) => req.get(`/search/suggest?ke
  * @returns 
  */
 export const getBanner = (type: number = 0) => req.get(`/banner?type=${type}`)
+
+export const getDragonBall = () => req.get('/homepage/dragon/ball')

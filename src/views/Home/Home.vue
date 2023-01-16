@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Search from '@/views/Home/components/Search.vue'
 import Banner from './components/Banner.vue'
-
+import HomeNav from './components/HomeNav.vue'
 </script>
 
 <template>
@@ -11,6 +11,8 @@ import Banner from './components/Banner.vue'
 
             <Search></Search>
             <Banner></Banner>
+            <HomeNav></HomeNav>
+
         </div>
     </Suspense>
 

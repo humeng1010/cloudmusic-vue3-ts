@@ -34,8 +34,14 @@ onMounted(async () => {
         margin: 10px auto;
     }
 
-    img {
-        width: 100%;
+    a {
+        display: block;
+
+        img {
+            width: 100%;
+        }
     }
+
+
 }
 </style>
