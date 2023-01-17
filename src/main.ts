@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import { Button, Search, Icon, List, Swipe, SwipeItem, Popup, Tabbar, TabbarItem } from 'vant'
+import { Button, Search, Icon, List, Swipe, SwipeItem, Popup, Tabbar, TabbarItem, Grid, GridItem } from 'vant'
 
 
 const app = createApp(App)
@@ -19,5 +19,7 @@ app.use(SwipeItem)
 app.use(Popup)
 app.use(Tabbar)
 app.use(TabbarItem)
+app.use(Grid)
+app.use(GridItem)
 
 app.mount('#app')

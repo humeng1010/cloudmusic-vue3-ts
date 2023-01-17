@@ -1,50 +1,59 @@
 <script setup lang="ts">
 import { getDragonBall } from '@/api/index'
-import { ref } from 'vue';
-const lists = ref([])
+import { ref, onMounted } from 'vue';
+const lists = ref<{
+    homepageMode: string
+    iconUrl: string
+    id: number
+    name: string
+    resourceState: object
+    skinSupport: boolean
+    url: string
+
+}[]>([])
 const data = await getDragonBall()
 console.log(data.data)
 lists.value = data.data.data
 
+lists.value.slice(0, 5).forEach(l => {
+    console.log()
+
+})
+
+/* 设置每日推荐日期,暂时这样处理吧 ╮(╯▽╰)╭ */
+onMounted(() => {
+    const badge = document.querySelector('#nav .van-badge__wrapper')
+    console.log(badge)
+    const date = new Date()
+    const day = date.getDate()
+    const span_day = document.createElement('span')
+    span_day.id = "span_day"
+    span_day.style.color = '#fff'
+    span_day.style.position = 'absolute'
+    span_day.style.top = '50%'
+    span_day.style.right = "50%"
+    span_day.style.transform = "translate(50%, -50%)"
+    span_day.innerText = day.toString()
+    badge?.appendChild(span_day)
+})
+
 </script>
 
 <template>
-    <div class="row">
-        <div class="nav-row">
-            <div class="list" v-for="list in lists" :key="list.id">
-                <!-- <div class="icon"></div> -->
-                <img :src="list.iconUrl" alt="">
-                <div class="title">{{ list.name }}</div>
-            </div>
-        </div>
+    <div id="nav">
+        <van-grid :border="false" :gutter="6" :column-num="5" style="overflow: hidden;">
+            <van-grid-item v-for="list in lists.slice(0, 5)" :key="list.id" :text="list.name" :to="list.url.slice(9)">
+                <template #icon>
+                    <!-- 调节图片的颜色 -->
+                    <van-image :src="list.iconUrl"
+                        style="filter: drop-shadow(-8000px 0px #ee0a24);transform: translateX(8000px);"></van-image>
+                </template>
+            </van-grid-item>
+        </van-grid>
     </div>
+
 </template>
 
 <style scoped lang="less">
-.row {
-    width: 100%;
-    overflow-x: auto;
 
-    .nav-row {
-        display: flex;
-        width: 200%;
-
-        .list {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 10%;
-
-            margin: 10px 0;
-
-            img {
-                width: 100%;
-                filter: drop-shadow(-80px 0px red);
-                transform: translateX(80px);
-            }
-
-        }
-    }
-}
 </style>
