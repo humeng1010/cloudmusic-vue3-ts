@@ -1,23 +1,34 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { getBanner } from '@/api/index';
-const banners = ref()
+const banners = ref<{
+    alg?: string,
+    bannerId?: string,
+    pic?: string
+    url?: string
+}[]>()
 
 onMounted(async () => {
-    const res = await getBanner(2)
-    banners.value = res.data.banners
+    try {
+        const res = await getBanner(2)
+        banners.value = res.data.banners
+    } catch (error) {
+        console.log(error)
+    }
 
 })
+const gotoUrl = (url: string) => {
+    if (url)
+        location.href = url
+}
 
 
 </script>
 
 <template>
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-        <van-swipe-item v-for="banner in banners" :key="banner.id">
-            <a :href="banner.url">
-                <img :src="banner.pic" alt="">
-            </a>
+        <van-swipe-item v-for="banner in banners" :key="banner.bannerId">
+            <img :src="banner.pic" @click="gotoUrl(banner.url as string)" alt="">
         </van-swipe-item>
 
     </van-swipe>
@@ -34,14 +45,9 @@ onMounted(async () => {
         margin: 10px auto;
     }
 
-    a {
-        display: block;
-
-        img {
-            width: 100%;
-        }
+    img {
+        width: 100%;
     }
-
 
 }
 </style>

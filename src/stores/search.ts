@@ -8,8 +8,12 @@ export const useSearchStore = defineStore('search', () => {
   const searchDefault = ref<SearchDefault>()
   // async
   const getSearchDefaultFun = async () => {
-    const { data } = await getSearchDefault()
-    searchDefault.value = data.data
+    try {
+      const { data } = await getSearchDefault()
+      searchDefault.value = data.data
+    } catch (error) {
+      console.log(error)
+    }
   }
 
 

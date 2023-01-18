@@ -11,19 +11,17 @@ const lists = ref<{
     url: string
 
 }[]>([])
-const data = await getDragonBall()
-console.log(data.data)
-lists.value = data.data.data
+try {
+    const data = await getDragonBall()
+    lists.value = data.data.data
+} catch (error) {
+    console.log(error)
+}
 
-lists.value.slice(0, 5).forEach(l => {
-    console.log()
-
-})
 
 /* 设置每日推荐日期,暂时这样处理吧 ╮(╯▽╰)╭ */
 onMounted(() => {
     const badge = document.querySelector('#nav .van-badge__wrapper')
-    console.log(badge)
     const date = new Date()
     const day = date.getDate()
     const span_day = document.createElement('span')

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type SearchDefault from '@/type/SearchDefault'
-import { reactive, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { getSearchSuggest } from '@/api/index'
 
 const keyword = ref('')
@@ -22,9 +22,12 @@ watch(keyword, (value) => {
     if (!value.trim()) return
     clearTimeout(timer)
     timer = setTimeout(async () => {
-        const res = await getSearchSuggest(value)
-        console.log('@@')
-        searchSuggest.value = res.data.result.allMatch
+        try {
+            const res = await getSearchSuggest(value)
+            searchSuggest.value = res.data.result.allMatch
+        } catch (error) {
+            console.log(error)
+        }
     }, 500);
 })
 </script>

@@ -3,7 +3,20 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import { Button, Search, Icon, List, Swipe, SwipeItem, Popup, Tabbar, TabbarItem, Grid, GridItem } from 'vant'
+import "@/assets/main.css"
+import {
+    Button,
+    Search,
+    Icon,
+    List,
+    Swipe, SwipeItem,
+    Popup,
+    Tabbar, TabbarItem,
+    Grid, GridItem,
+    Image as VanImage,
+    Form, Field, CellGroup,
+    Notify
+} from 'vant'
 
 
 const app = createApp(App)
@@ -21,5 +34,10 @@ app.use(Tabbar)
 app.use(TabbarItem)
 app.use(Grid)
 app.use(GridItem)
+app.use(VanImage)
+app.use(Form);
+app.use(Field);
+app.use(CellGroup);
+app.use(Notify)
 
 app.mount('#app')
