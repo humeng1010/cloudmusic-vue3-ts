@@ -2,6 +2,8 @@
 import Search from '@/views/Home/components/Search.vue'
 import Banner from './components/Banner.vue'
 import HomeNav from './components/HomeNav.vue'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 </script>
 
 <template>

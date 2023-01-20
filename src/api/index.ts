@@ -40,3 +40,15 @@ export const captcha_sent = (phone: string) => req.get(`/captcha/sent`, { params
  * @returns 
  */
 export const captcha_verify = (phone: string, captcha: string) => req({ url: "/captcha/verify", params: { phone, captcha } })
+
+/**
+ * 调用此接口,可获取登录状态
+ * @returns 
+ */
+export const getLoginStatus = () => req.get('/login/status')
+
+/**
+ * 登录后调用此接口 ,可获取用户账号信息
+ * @returns 
+ */
+export const getUserAccountInfo = () => req.get('/user/account')

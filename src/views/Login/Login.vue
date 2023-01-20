@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { captcha_sent, captcha_verify } from '@/api/index'
+import { captcha_sent, captcha_verify, getUserAccountInfo } from '@/api/index'
 import { showNotify } from 'vant';
 const sendDisable = ref(false)
 const sendTime = ref(60)
@@ -32,6 +32,8 @@ const onSubmit = async (values: { phone: string, captcha: string }) => {
         console.log(res.data)
         if (res.data.data) {
             showNotify({ type: 'success', message: '登陆成功' });
+            const userInfo = await getUserAccountInfo()
+            console.log(userInfo)
         }
     } catch (error) {
         showNotify({ type: 'warning', message: '验证码错误' });
