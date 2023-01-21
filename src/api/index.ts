@@ -64,3 +64,11 @@ export const logout = () => req.get('/logout')
  * @returns 
  */
 export const get_personal_fm = () => req.get("/personal_fm")
+
+/**
+ * 
+ * @param id 音乐id
+ * @param level 播放音质等级 standard => 标准,higher => 较高, exhigh=>极高, lossless=>无损, hires=>Hi-Res
+ * @returns 
+ */
+export const getSongUrl = (id: string | number, level: string = "exhigh") => req.get(`/song/url/v1?id=${id}&level=${level}`)

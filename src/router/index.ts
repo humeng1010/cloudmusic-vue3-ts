@@ -30,6 +30,11 @@ const router = createRouter({
       component: () => import("@/views/Search/Search.vue")
     },
     {
+      name: "privatefm",
+      path: "/privatefm",
+      component: () => import("@/views/Home/components/views/Privatefm/privatefm.vue")
+    },
+    {
       name: "podcast",
       path: "/podcast",
       component: () => import("@/views/Podcast/Podcast.vue"),
