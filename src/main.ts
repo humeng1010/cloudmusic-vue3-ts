@@ -3,6 +3,10 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import 'vant/es/toast/style';
+import 'vant/es/dialog/style';
+import 'vant/es/notify/style';
+import 'vant/es/image-preview/style';
 import "@/assets/main.css"
 import {
     Button,
@@ -15,7 +19,8 @@ import {
     Grid, GridItem,
     Image as VanImage,
     Form, Field, CellGroup,
-    Notify
+    Notify,
+    Toast
 } from 'vant'
 
 
@@ -39,5 +44,6 @@ app.use(Form);
 app.use(Field);
 app.use(CellGroup);
 app.use(Notify)
+app.use(Toast)
 
 app.mount('#app')

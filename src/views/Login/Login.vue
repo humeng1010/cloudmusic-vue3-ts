@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { captcha_sent, captcha_verify, getUserAccountInfo } from '@/api/index'
 import { showNotify } from 'vant';
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const sendDisable = ref(false)
 const sendTime = ref(60)
 const phone = ref('');
@@ -29,11 +31,12 @@ const sendCaptcha = async () => {
 const onSubmit = async (values: { phone: string, captcha: string }) => {
     try {
         const res = await captcha_verify(values.phone, values.captcha)
-        console.log(res.data)
         if (res.data.data) {
             showNotify({ type: 'success', message: '登陆成功' });
             const userInfo = await getUserAccountInfo()
-            console.log(userInfo)
+            if (userInfo.data.code === 200) {
+                router.replace("/home")
+            }
         }
     } catch (error) {
         showNotify({ type: 'warning', message: '验证码错误' });

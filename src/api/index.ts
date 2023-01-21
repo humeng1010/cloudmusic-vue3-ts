@@ -52,3 +52,15 @@ export const getLoginStatus = () => req.get('/login/status')
  * @returns 
  */
 export const getUserAccountInfo = () => req.get('/user/account')
+
+/**
+ * 退出当前账号
+ * @returns 
+ */
+export const logout = () => req.get('/logout')
+
+/**
+ * 获取私人fm 需要登陆
+ * @returns 
+ */
+export const get_personal_fm = () => req.get("/personal_fm")

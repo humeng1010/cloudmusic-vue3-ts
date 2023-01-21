@@ -4,6 +4,8 @@ import Banner from './components/Banner.vue'
 import HomeNav from './components/HomeNav.vue'
 import { useUserStore } from '@/stores/user'
 const userStore = useUserStore()
+await userStore.getUserInfo()
+console.log(userStore.loginState)
 </script>
 
 <template>
