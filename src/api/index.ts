@@ -72,3 +72,10 @@ export const get_personal_fm = () => req.get("/personal_fm")
  * @returns 
  */
 export const getSongUrl = (id: string | number, level: string = "exhigh") => req.get(`/song/url/v1?id=${id}&level=${level}`)
+
+/**
+ * 根据关键词搜索歌曲
+ * @param keyword 关键词
+ * @returns 
+ */
+export const searchKeyword = (keyword: string) => req.get(`/search?keywords=${keyword}`)

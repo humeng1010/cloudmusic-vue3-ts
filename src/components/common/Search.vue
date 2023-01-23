@@ -2,9 +2,10 @@
 import type SearchDefault from '@/type/SearchDefault'
 import { ref, watch } from 'vue';
 import { getSearchSuggest } from '@/api/index'
-
+import { useRouter } from 'vue-router'
 const keyword = ref('')
 const searchSuggest = ref<{ alg?: string, feature?: string, keyword?: string, lastKeyword?: string, type?: number }[]>([])
+const router = useRouter()
 defineProps<{
     searchDefault?: SearchDefault,
     disable?: boolean,
@@ -30,6 +31,13 @@ watch(keyword, (value) => {
         }
     }, 500);
 })
+const searchSong = (keyword: string) => {
+    console.log('@', keyword)
+    if (!keyword.trim()) return
+
+    router.push({ path: "/song-list", query: { keyword } })
+
+}
 </script>
 
 <template>
@@ -39,7 +47,7 @@ watch(keyword, (value) => {
         </div>
         <div class="search-main" @click="openSearchPage">
             <van-search left-icon="none" v-model="keyword" :autofocus="autofocus" :disabled="disable"
-                :placeholder="searchDefault?.showKeyword" shape="round" />
+                :placeholder="searchDefault?.showKeyword" shape="round" autocomplete="off" />
         </div>
         <div class="scan">
             <slot name="right" :value="keyword"></slot>
@@ -47,7 +55,8 @@ watch(keyword, (value) => {
     </div>
     <div class="list" v-show="keyword">
         <van-list>
-            <van-cell v-for="item, index in searchSuggest" :key="index" :title="item.keyword" />
+            <van-cell v-for="item, index in searchSuggest" :key="index" :title="item.keyword"
+                @click="searchSong(item.keyword)" />
         </van-list>
     </div>
 </template>

@@ -20,7 +20,7 @@ songInfo.value.forEach((ele: any) => {
 <template>
     私人fm
     歌曲名称:{{ songInfo[0].name }}
-    <audio :src="songUrl[1]" controls autoplay></audio>
+    <audio :src="songUrl[0]" controls autoplay></audio>
 </template>
 
 <style scoped lang="less">

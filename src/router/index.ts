@@ -30,6 +30,14 @@ const router = createRouter({
       component: () => import("@/views/Search/Search.vue")
     },
     {
+      name: "songList",
+      path: "/song-list",
+      /*  props: (router) => {
+         return router.query.keyword
+       }, */
+      component: () => import("@/views/songList/SongList.vue")
+    },
+    {
       name: "privatefm",
       path: "/privatefm",
       component: () => import("@/views/Home/components/views/Privatefm/privatefm.vue")
