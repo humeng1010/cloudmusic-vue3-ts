@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Search from '@/components/common/Search.vue'
 import { useSearchStore } from '@/stores/search'
+import { useRouter } from 'vue-router'
 const stores = useSearchStore()
+const router = useRouter()
 let searchDefault = stores.searchDefault
 // 如果没有数据
 if (!searchDefault) {
@@ -11,7 +13,11 @@ if (!searchDefault) {
 }
 // 点击按钮的 搜索的关键字
 const goSearch = async (value: string) => {
-    // console.log(value)
+
+    console.log('@', value)
+    if (!value.trim()) return
+
+    router.push({ path: "/song-list", query: { keyword: value } })
 
 
 }

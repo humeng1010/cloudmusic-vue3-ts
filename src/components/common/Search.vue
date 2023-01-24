@@ -56,7 +56,7 @@ const searchSong = (keyword: string) => {
     <div class="list" v-show="keyword">
         <van-list>
             <van-cell v-for="item, index in searchSuggest" :key="index" :title="item.keyword"
-                @click="searchSong(item.keyword)" />
+                @click="searchSong(item.keyword as string)" />
         </van-list>
     </div>
 </template>
