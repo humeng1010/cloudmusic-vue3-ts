@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    MusicInterface: typeof import('./src/components/common/MusicInterface.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/common/Search.vue')['default']
@@ -21,7 +22,10 @@ declare module '@vue/runtime-core' {
     VanIcon: typeof import('vant/es')['Icon']
     VanImage: typeof import('vant/es')['Image']
     VanList: typeof import('vant/es')['List']
+    VanLoading: typeof import('vant/es')['Loading']
+    VanNoticeBar: typeof import('vant/es')['NoticeBar']
     VanPopup: typeof import('vant/es')['Popup']
+    VanProgress: typeof import('vant/es')['Progress']
     VanSearch: typeof import('vant/es')['Search']
     VanSwipe: typeof import('vant/es')['Swipe']
     VanSwipeItem: typeof import('vant/es')['SwipeItem']

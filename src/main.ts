@@ -20,7 +20,10 @@ import {
     Image as VanImage,
     Form, Field, CellGroup,
     Notify,
-    Toast
+    Toast,
+    Progress,
+    Lazyload,
+    NoticeBar
 } from 'vant'
 
 
@@ -45,5 +48,8 @@ app.use(Field);
 app.use(CellGroup);
 app.use(Notify)
 app.use(Toast)
+app.use(Progress)
+app.use(Lazyload)
+app.use(NoticeBar)
 
 app.mount('#app')
