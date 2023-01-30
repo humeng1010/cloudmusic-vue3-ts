@@ -6,7 +6,6 @@ const logoutCurrentUser = async () => {
     // console.log(res.data)
     if (res.data.code === 200) {
         showToast('退出成功');
-        document.cookie = "NMTID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     }
 
 }

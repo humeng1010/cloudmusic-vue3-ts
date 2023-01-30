@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed, watch } from 'vue'
+import { ref, watchEffect, computed, watch, nextTick } from 'vue'
 import { getSongUrl } from '@/api/index'
+import { showToast } from 'vant'
+
 const isShow = ref<boolean>(false)
 const isPlay = ref<boolean>(true)
+const songIndex = ref(0)
 const props = defineProps<{
     name: string
-    songInfo: any
+    songInfo: any[]
+}>()
+const emit = defineEmits<{
+    (e: 'getPersonalFM'): Promise<void>
 }>()
 props.songInfo.forEach(async (ele: any) => {
     const res = await getSongUrl(ele.id, "hires")
@@ -17,14 +23,18 @@ const audio = ref<HTMLAudioElement>()
 watchEffect(() => {
     if (isPlay.value) {
         console.log("play")
-        audio.value?.play()
+        audio.value?.play().catch((reason) => {
+            console.log(reason)
+            isPlay.value = false
+            showToast('请手动播放')
+        })
     } else {
         console.log('pause')
         audio.value?.pause()
     }
 })
 const totalTime = computed(() => {
-    const s = (props.songInfo[0].duration / 1000).toFixed(0)
+    const s = (props.songInfo[songIndex.value].duration / 1000).toFixed(0)
     const ss = parseInt(s) % 60
     const sss = ss < 10 ? '0' + ss : ss
     const mm = (parseInt(s) / 60).toFixed(0)
@@ -32,8 +42,19 @@ const totalTime = computed(() => {
 
     return mmm + ':' + sss
 })
-
+// 进度条
+const progressBar = ref(0)
 const time = ref({ m: 0, s: 0 })
+// 秒
+let m = 0
+watch(time.value, () => {
+    m++
+    let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
+    if (progress > 100) return
+    progressBar.value = progress
+    console.log('@', progressBar.value)
+}, { immediate: true })
+
 let timer: number | undefined
 watch(isPlay, () => {
     if (isPlay.value) {
@@ -41,6 +62,12 @@ watch(isPlay, () => {
             if (time.value.s >= 59) {
                 time.value.m++
                 time.value.s = 0
+                return
+            }
+            // 如果当前时间大于总时间
+            if ((time.value.m * 60 + time.value.s) >= parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) {
+                clearInterval(timer)
+                isPlay.value = false
                 return
             }
             time.value.s++
@@ -52,6 +79,38 @@ watch(isPlay, () => {
 const nowTime = computed(() => {
     return (time.value.m < 10 ? '0' + time.value.m : time.value.m) + ':' + (time.value.s < 10 ? '0' + time.value.s : time.value.s)
 })
+const playBefore = () => {
+    if (songIndex.value === 0) {
+        showToast('前面没有歌曲');
+        return
+    }
+    songIndex.value--
+    time.value.m = 0
+    time.value.s = 0
+    m = 0
+    progressBar.value = 0
+    isPlay.value = true
+
+
+}
+const playAfter = async () => {
+    // 推荐的歌曲列表小于等于歌曲索引则需要再次请求 推荐列表
+    if (props.songInfo.length - 1 <= songIndex.value) {
+        console.log('request')
+
+        showToast('后面没有歌曲,需要再次请求,获取私人FM');
+        emit('getPersonalFM')
+        // return
+    }
+    songIndex.value++
+    time.value.m = 0
+    time.value.s = 0
+    m = 0
+    progressBar.value = 0
+    isPlay.value = true
+
+}
+
 
 
 </script>
@@ -59,13 +118,13 @@ const nowTime = computed(() => {
 <template>
     <!-- 最小化在页面底部显示 -->
     <div class="min" v-show="isShow">
-
+        <span @click="isShow = false">再次点击我打开(待开发)</span>
     </div>
     <!-- 音乐播放界面组件 -->
     <div class="music-interface" v-show="!isShow">
         <header>
             <div class="title">
-                <div class="min">
+                <div class="min" @click="isShow = true">
                     <van-icon name="arrow-down" />
                 </div>
                 <div class="name">
@@ -79,7 +138,7 @@ const nowTime = computed(() => {
 
         <main class="main">
             <!-- pic -->
-            <van-image :src="songInfo[0].album.picUrl" width="90%" radius="10px" fit="cover">
+            <van-image :src="songInfo[songIndex].album.picUrl" width="90%" radius="10px" fit="cover">
                 <!-- <template v-slot:loading>
                     <van-loading type="spinner" size="20" />
                 </template> -->
@@ -87,7 +146,7 @@ const nowTime = computed(() => {
 
             <div class="music-name">
                 <!-- 音乐名称 -->
-                {{ songInfo[0].name }}
+                {{ songInfo[songIndex].name }}
                 <!-- 名称过长优化 -->
                 <!-- <van-notice-bar background="rgba(0,0,0,.0)" color="#fff">
                             <template v-slot:default>
@@ -98,7 +157,7 @@ const nowTime = computed(() => {
                         </van-notice-bar> -->
             </div>
             <div class="author">
-                <span class="van-ellipsis" v-for="artist in songInfo[0].album.artists">
+                <span class="van-ellipsis" v-for="artist in songInfo[songIndex].album.artists">
                     {{ artist.name }} &nbsp;
                 </span>
                 <!-- 作者名称过长优化 -->
@@ -121,7 +180,7 @@ const nowTime = computed(() => {
                     {{ nowTime }}
                 </div>
                 <div class="bar">
-                    <van-progress :percentage="10" stroke-width="3" color="#fff" track-color="#ccc"
+                    <van-progress :percentage="progressBar" stroke-width="3" color="#fff" track-color="#ccc"
                         :show-pivot="false" />
                 </div>
                 <div class="total">
@@ -133,17 +192,17 @@ const nowTime = computed(() => {
                 <div class="like">
                     <van-icon name="like-o" />
                 </div>
-                <div class="before">
+                <div class="before" @click="playBefore">
                     <van-icon name="arrow-left" />
                 </div>
-                <audio :src="songInfo[0].songUrl?.url" autoplay ref="audio"></audio>
+                <audio :src="songInfo[songIndex].songUrl?.url" autoplay ref="audio"></audio>
                 <div class="play" @click="isPlay = !isPlay">
                     <!-- ▶️点击播放,播放按钮,暂停的时候显示 -->
                     <van-icon name="play-circle-o" v-show="!isPlay" />
                     <!-- ⏸点击暂停,暂停按钮,播放的时候显示 -->
                     <van-icon name="pause-circle-o" v-show="isPlay" />
                 </div>
-                <div class="after">
+                <div class="after" @click="playAfter">
                     <van-icon name="arrow" />
                 </div>
                 <div class="comment">
@@ -176,7 +235,7 @@ const nowTime = computed(() => {
         left: 0;
         width: 100%;
         height: 100vh;
-        background: v-bind('"url(" + songInfo[0].album.blurPicUrl + ")"') no-repeat center;
+        background: v-bind('"url(" + songInfo[songIndex].album.blurPicUrl + ")"') no-repeat center;
         background-size: 100vw 100vh;
         filter: blur(30px);
         z-index: -1;
