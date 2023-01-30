@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed, watch, nextTick } from 'vue'
+import { ref, watchEffect, computed, watch } from 'vue'
 import { getSongUrl } from '@/api/index'
 import { showToast } from 'vant'
 
@@ -22,14 +22,14 @@ console.log(props.songInfo)
 const audio = ref<HTMLAudioElement>()
 watchEffect(() => {
     if (isPlay.value) {
-        console.log("play")
+        // console.log("play")
         audio.value?.play().catch((reason) => {
             console.log(reason)
             isPlay.value = false
             showToast('请手动播放')
         })
     } else {
-        console.log('pause')
+        // console.log('pause')
         audio.value?.pause()
     }
 })
@@ -52,8 +52,8 @@ watch(time.value, () => {
     let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
     if (progress > 100) return
     progressBar.value = progress
-    console.log('@', progressBar.value)
-}, { immediate: true })
+    // console.log('@', progressBar.value)
+})
 
 let timer: number | undefined
 watch(isPlay, () => {
