@@ -3,36 +3,46 @@ import { ref, watchEffect, computed, watch } from 'vue'
 import { getSongUrl } from '@/api/index'
 import { showToast } from 'vant'
 
+// 是否显示完整的播放界面
 const isShow = ref<boolean>(false)
+// 播放状态
 const isPlay = ref<boolean>(true)
+// 当前播放的歌曲索引
 const songIndex = ref(0)
+/**
+ * name : 当前所处的播放位置(私人FM,每日推荐,排行榜...)
+ * songInfo : 歌曲列表
+ */
 const props = defineProps<{
     name: string
     songInfo: any[]
 }>()
+// 自定义事件,即将被移除
 const emit = defineEmits<{
     (e: 'getPersonalFM'): Promise<void>
 }>()
+// 获取播放歌曲的url,并存放在每一个songInfo的songUrl中
 props.songInfo.forEach(async (ele: any) => {
     const res = await getSongUrl(ele.id, "hires")
     ele.songUrl = res.data.data[0]
 });
 console.log(props.songInfo)
-// 控制音乐
+
+
+// 控制音乐,获取audio的ref,方便操作
 const audio = ref<HTMLAudioElement>()
 watchEffect(() => {
     if (isPlay.value) {
-        // console.log("play")
         audio.value?.play().catch((reason) => {
             console.log(reason)
             isPlay.value = false
             showToast('请手动播放')
         })
     } else {
-        // console.log('pause')
         audio.value?.pause()
     }
 })
+// 该歌曲的总时间
 const totalTime = computed(() => {
     const s = (props.songInfo[songIndex.value].duration / 1000).toFixed(0)
     const ss = parseInt(s) % 60
@@ -47,12 +57,12 @@ const progressBar = ref(0)
 const time = ref({ m: 0, s: 0 })
 // 秒
 let m = 0
+// 监视当前时间,增长时间进度条
 watch(time.value, () => {
     m++
     let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
     if (progress > 100) return
     progressBar.value = progress
-    // console.log('@', progressBar.value)
 })
 
 let timer: number | undefined
@@ -76,22 +86,30 @@ watch(isPlay, () => {
         clearInterval(timer)
     }
 }, { immediate: true })
+// 用于展示的当前时间的格式
 const nowTime = computed(() => {
     return (time.value.m < 10 ? '0' + time.value.m : time.value.m) + ':' + (time.value.s < 10 ? '0' + time.value.s : time.value.s)
 })
+// 重置状态
+const resetState = () => {
+    // 重置当前时间
+    time.value.m = 0
+    time.value.s = 0
+    // 重置进度条的m
+    m = 0
+    // 重置进度条
+    progressBar.value = 0
+    // 恢复播放
+    isPlay.value = true
+}
+// 上一首
 const playBefore = () => {
     if (songIndex.value === 0) {
         showToast('前面没有歌曲');
         return
     }
     songIndex.value--
-    time.value.m = 0
-    time.value.s = 0
-    m = 0
-    progressBar.value = 0
-    isPlay.value = true
-
-
+    resetState()
 }
 const playAfter = async () => {
     // 推荐的歌曲列表小于等于歌曲索引则需要再次请求 推荐列表
@@ -100,18 +118,10 @@ const playAfter = async () => {
 
         showToast('后面没有歌曲,需要再次请求,获取私人FM');
         emit('getPersonalFM')
-        // return
     }
     songIndex.value++
-    time.value.m = 0
-    time.value.s = 0
-    m = 0
-    progressBar.value = 0
-    isPlay.value = true
-
+    resetState()
 }
-
-
 
 </script>
 
