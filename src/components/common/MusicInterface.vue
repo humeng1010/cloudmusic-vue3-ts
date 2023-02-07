@@ -117,7 +117,8 @@ const playAfter = async () => {
         console.log('request')
 
         showToast('后面没有歌曲,需要再次请求,获取私人FM');
-        emit('getPersonalFM')
+        // emit('getPersonalFM')
+        return
     }
     songIndex.value++
     resetState()
