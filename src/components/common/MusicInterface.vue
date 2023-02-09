@@ -42,29 +42,25 @@ watchEffect(() => {
         audio.value?.pause()
     }
 })
+const totalS = Math.round(props.songInfo[songIndex.value].duration / 1000)
 // 该歌曲的总时间
 const totalTime = computed(() => {
-    const s = (props.songInfo[songIndex.value].duration / 1000).toFixed(0)
-    const ss = parseInt(s) % 60
+    // 歌曲总时间-单位秒
+    const s = totalS
+    const ss = s % 60
     const sss = ss < 10 ? '0' + ss : ss
-    const mm = (parseInt(s) / 60).toFixed(0)
-    const mmm = parseInt(mm) < 10 ? '0' + mm : mm
+    // 分钟
+    const mm = Math.floor(s / 60)
+    const mmm = mm < 10 ? '0' + mm : mm
 
     return mmm + ':' + sss
 })
 // 进度条
 const progressBar = ref(0)
 const time = ref({ m: 0, s: 0 })
-// 秒
+// 秒-(用于计算进度条的数值和判断当前时间是否等于总时间)
 let m = 0
-// 监视当前时间,增长时间进度条
-watch(time.value, () => {
-    m++
-    let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
-    if (progress > 100) return
-    progressBar.value = progress
-})
-
+// 定时器
 let timer: number | undefined
 watch(isPlay, () => {
     if (isPlay.value) {
@@ -72,6 +68,11 @@ watch(isPlay, () => {
             if (time.value.s >= 59) {
                 time.value.m++
                 time.value.s = 0
+                // 进度条
+                m++
+                let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
+                if (progress > 100) return
+                progressBar.value = progress
                 return
             }
             // 如果当前时间大于总时间
@@ -81,6 +82,15 @@ watch(isPlay, () => {
                 return
             }
             time.value.s++
+            // 进度条
+            m++
+            let progress = (m / parseInt((props.songInfo[songIndex.value].duration / 1000).toFixed(0))) * 100
+            if (progress > 100) return
+            progressBar.value = progress
+
+            if (m >= totalS) {
+                playAfter()
+            }
         }, 1000)
     } else {
         clearInterval(timer)
@@ -111,13 +121,12 @@ const playBefore = () => {
     songIndex.value--
     resetState()
 }
-const playAfter = async () => {
+const playAfter = () => {
     // 推荐的歌曲列表小于等于歌曲索引则需要再次请求 推荐列表
     if (props.songInfo.length - 1 <= songIndex.value) {
         console.log('request')
 
         showToast('后面没有歌曲,需要再次请求,获取私人FM');
-        // emit('getPersonalFM')
         return
     }
     songIndex.value++
