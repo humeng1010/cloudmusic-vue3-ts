@@ -17,10 +17,7 @@ const props = defineProps<{
     name: string
     songInfo: any[]
 }>()
-// 自定义事件,即将被移除
-const emit = defineEmits<{
-    (e: 'getPersonalFM'): Promise<void>
-}>()
+
 // 获取播放歌曲的url,并存放在每一个songInfo的songUrl中
 props.songInfo.forEach(async (ele: any) => {
     const res = await getSongUrl(ele.id, "hires")
@@ -28,7 +25,7 @@ props.songInfo.forEach(async (ele: any) => {
 });
 console.log(props.songInfo)
 
-
+// 应该等待audio加载完毕再进行计时等操作防止网络原因导致出现bug (接下来需要完善的)
 // 控制音乐,获取audio的ref,方便操作
 const audio = ref<HTMLAudioElement>()
 watchEffect(() => {
