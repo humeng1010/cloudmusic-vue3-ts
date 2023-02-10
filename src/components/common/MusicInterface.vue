@@ -129,7 +129,6 @@ const playAfter = () => {
     songIndex.value++
     resetState()
 }
-
 </script>
 
 <template>
@@ -145,7 +144,7 @@ const playAfter = () => {
                     <van-icon name="arrow-down" />
                 </div>
                 <div class="name">
-                    {{ name }}
+                    {{ name?name: '音乐播放器' }}
                 </div>
                 <div class="more">
                     <van-icon name="ellipsis" />
