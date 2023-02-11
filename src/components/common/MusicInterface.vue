@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed, watch } from 'vue'
-import { getSongUrl } from '@/api/index'
 import { showToast } from 'vant'
 
 // 是否显示完整的播放界面
@@ -18,28 +17,25 @@ const props = defineProps<{
     songInfo: any[]
 }>()
 
-// 获取播放歌曲的url,并存放在每一个songInfo的songUrl中
-props.songInfo.forEach(async (ele: any) => {
-    const res = await getSongUrl(ele.id, "hires")
-    ele.songUrl = res.data.data[0]
-});
 console.log(props.songInfo)
 
 // 应该等待audio加载完毕再进行计时等操作防止网络原因导致出现bug (接下来需要完善的)
 // 控制音乐,获取audio的ref,方便操作
-const audio = ref<HTMLAudioElement>()
+const audio = new Audio(props.songInfo[songIndex.value].songUrl?.url)
+
+
 watchEffect(() => {
     if (isPlay.value) {
-        audio.value?.play().catch((reason) => {
+        audio.play().catch((reason) => {
             console.log(reason)
             isPlay.value = false
             showToast('请手动播放')
         })
     } else {
-        audio.value?.pause()
+        audio.pause()
     }
 })
-const totalS = Math.round(props.songInfo[songIndex.value].duration / 1000)
+const totalS = Math.round(props.songInfo[songIndex.value]?.duration / 1000)
 // 该歌曲的总时间
 const totalTime = computed(() => {
     // 歌曲总时间-单位秒
@@ -211,7 +207,7 @@ const playAfter = () => {
                 <div class="before" @click="playBefore">
                     <van-icon name="arrow-left" />
                 </div>
-                <audio :src="songInfo[songIndex].songUrl?.url" autoplay ref="audio"></audio>
+                <!-- <audio :src="songInfo[songIndex].songUrl?.url" autoplay ref="audio"></audio> -->
                 <div class="play" @click="isPlay = !isPlay">
                     <!-- ▶️点击播放,播放按钮,暂停的时候显示 -->
                     <van-icon name="play-circle-o" v-show="!isPlay" />
